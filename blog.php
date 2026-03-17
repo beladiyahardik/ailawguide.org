@@ -19,7 +19,7 @@ if ($postId === '') {
     }
 }
 
-$posts        = blogger_fetch_posts($site, 9);
+$posts        = blogger_fetch_posts($site, 30);
 $selectedPost = $postId !== '' ? blogger_fetch_post_by_id($site, $postId) : null;
 $apiError     = blogger_last_error();
 $renderedContent = '';
@@ -37,6 +37,8 @@ if ($selectedPost !== null) {
         }
         return $matches[0];
     }, $renderedContent);
+    $renderedContent = blogger_strip_image_links($renderedContent);
+    $renderedContent = blogger_localize_html_images($renderedContent, $site);
 }
 
 if ($selectedPost !== null && $slug !== '' && $slug !== $selectedPost['slug']) {

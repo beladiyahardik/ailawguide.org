@@ -17,6 +17,7 @@ return [
     'updated_at' => 'February 18, 2026',
     'blogger_blog_id' => '2686289342782868722',
     'blogger_api_key' => 'AIzaSyDw4oUW9oN8DfN5u6CUgFJ5rE7CF512l_0',
+    'blogger_cache_ttl' => 3600,
     'nav' => [
         'Home' => '',
         'About' => 'about',

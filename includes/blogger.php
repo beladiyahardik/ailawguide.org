@@ -16,6 +16,183 @@ function blogger_last_error(): string
     return (string) ($GLOBALS['BLOGGER_LAST_ERROR'] ?? '');
 }
 
+function blogger_cache_root_dir(): string
+{
+    return dirname(__DIR__) . '/cache';
+}
+
+function blogger_cache_dir(string $name): string
+{
+    $dir = rtrim(blogger_cache_root_dir(), '/') . '/' . trim($name, '/');
+    if (!is_dir($dir)) {
+        @mkdir($dir, 0755, true);
+    }
+    return $dir;
+}
+
+function blogger_read_json_cached(string $url, int $ttlSeconds = 0): array
+{
+    $cacheFile = '';
+    if ($ttlSeconds > 0) {
+        $cacheDir = blogger_cache_dir('blogger');
+        $cacheFile = $cacheDir . '/' . sha1($url) . '.json';
+        if (is_file($cacheFile) && (time() - filemtime($cacheFile) < $ttlSeconds)) {
+            $cached = @file_get_contents($cacheFile);
+            if (is_string($cached) && $cached !== '') {
+                blogger_set_last_error('');
+                $decoded = json_decode($cached, true);
+                if (is_array($decoded)) {
+                    return $decoded;
+                }
+            }
+        }
+    }
+
+    $data = blogger_read_json($url);
+    if ($ttlSeconds > 0 && !empty($data)) {
+        if ($cacheFile === '') {
+            $cacheDir = blogger_cache_dir('blogger');
+            $cacheFile = $cacheDir . '/' . sha1($url) . '.json';
+        }
+        @file_put_contents($cacheFile, json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), LOCK_EX);
+        return $data;
+    }
+
+    if ($ttlSeconds > 0 && $cacheFile !== '' && is_file($cacheFile)) {
+        $cached = @file_get_contents($cacheFile);
+        if (is_string($cached) && $cached !== '') {
+            $decoded = json_decode($cached, true);
+            if (is_array($decoded) && !empty($decoded)) {
+                blogger_set_last_error('');
+                return $decoded;
+            }
+        }
+    }
+
+    return $data;
+}
+
+function blogger_cache_ttl(array $site, int $fallback): int
+{
+    $ttl = (int) ($site['blogger_cache_ttl'] ?? 0);
+    return $ttl > 0 ? $ttl : $fallback;
+}
+
+function blogger_image_cache_dir(): string
+{
+    return dirname(__DIR__) . '/uploads/blogger';
+}
+
+function blogger_image_cache_url(array $site): string
+{
+    $siteUrl = rtrim((string) ($site['site_url'] ?? ''), '/');
+    if ($siteUrl !== '') {
+        return $siteUrl . '/uploads/blogger';
+    }
+    return blogger_base_path($site) . '/uploads/blogger';
+}
+
+function blogger_download_binary(string $url): string
+{
+    if (function_exists('curl_init')) {
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 20);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'AI Law Guide-ImageCache/1.0');
+        $response = curl_exec($ch);
+        $status = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        if (is_string($response) && $status >= 200 && $status < 300) {
+            return $response;
+        }
+        return '';
+    }
+
+    $response = @file_get_contents($url);
+    return is_string($response) ? $response : '';
+}
+
+function blogger_cache_image(string $url, array $site): string
+{
+    $url = trim($url);
+    if ($url === '' || str_starts_with($url, 'data:')) {
+        return $url;
+    }
+
+    $downloadUrl = $url;
+    if (str_starts_with($url, '//')) {
+        $downloadUrl = 'https:' . $url;
+    }
+
+    if (!preg_match('#^https?://#i', $downloadUrl)) {
+        return $url;
+    }
+
+    $path = (string) parse_url($downloadUrl, PHP_URL_PATH);
+    $ext = strtolower((string) pathinfo($path, PATHINFO_EXTENSION));
+    $allowedExt = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg'];
+    if ($ext === '' || !in_array($ext, $allowedExt, true)) {
+        $ext = 'jpg';
+    }
+
+    $hash = sha1($url);
+    $fileName = $hash . '.' . $ext;
+    $cacheDir = blogger_image_cache_dir();
+    if (!is_dir($cacheDir)) {
+        @mkdir($cacheDir, 0755, true);
+    }
+    $filePath = rtrim($cacheDir, '/') . '/' . $fileName;
+
+    if (!is_file($filePath)) {
+        $data = blogger_download_binary($downloadUrl);
+        if ($data !== '') {
+            @file_put_contents($filePath, $data, LOCK_EX);
+        }
+    }
+
+    if (is_file($filePath)) {
+        return blogger_image_cache_url($site) . '/' . rawurlencode($fileName);
+    }
+
+    return $url;
+}
+
+function blogger_strip_image_links(string $html): string
+{
+    if ($html === '') {
+        return $html;
+    }
+
+    return preg_replace('/<a\b[^>]*>\s*(<img\b[^>]*>)\s*<\/a>/i', '$1', $html);
+}
+
+function blogger_localize_html_images(string $html, array $site): string
+{
+    if ($html === '') {
+        return $html;
+    }
+
+    return preg_replace_callback('/<img\b[^>]*\bsrc=["\']([^"\']+)["\'][^>]*>/i', function ($matches) use ($site) {
+        $tag = $matches[0];
+        $src = $matches[1];
+        $cached = blogger_cache_image($src, $site);
+        if ($cached !== '' && $cached !== $src) {
+            $tag = preg_replace('/\bsrc=["\'][^"\']+["\']/i', 'src="' . $cached . '"', $tag, 1);
+        }
+
+        if (!preg_match('/\bloading=["\']?/i', $tag)) {
+            $tag = preg_replace('/\s*(\/?)>$/', ' loading="lazy"$1>', $tag);
+        }
+
+        if (!preg_match('/\bdecoding=["\']?/i', $tag)) {
+            $tag = preg_replace('/\s*(\/?)>$/', ' decoding="async"$1>', $tag);
+        }
+
+        return $tag;
+    }, $html);
+}
+
 function blogger_extract_first_image(string $html): ?string
 {
     if (preg_match('/<img[^>]+src=["\']([^"\']+)["\']/i', $html, $matches)) {
@@ -184,6 +361,9 @@ function blogger_map_post(array $item, array $site): array
     if ($thumbnail === null) {
         $thumbnail = '';
     }
+    if ($thumbnail !== '') {
+        $thumbnail = blogger_cache_image($thumbnail, $site);
+    }
 
     $wordCount = max(1, str_word_count($plainText));
     $readMinutes = max(1, (int) ceil($wordCount / 220));
@@ -241,7 +421,8 @@ function blogger_fetch_posts(array $site, int $maxResults = 9): array
         'status' => 'LIVE',
     ]);
 
-    $data = blogger_read_json($url);
+    $cacheTtl = blogger_cache_ttl($site, 3600);
+    $data = blogger_read_json_cached($url, $cacheTtl);
     $items = $data['items'] ?? [];
 
     if (!is_array($items)) {
@@ -278,7 +459,8 @@ function blogger_fetch_blog_info(array $site): array
     }
 
     $url = blogger_api_url($site, 'blogs/' . rawurlencode($blogId));
-    $data = blogger_read_json($url);
+    $cacheTtl = blogger_cache_ttl($site, 21600);
+    $data = blogger_read_json_cached($url, $cacheTtl);
     if (!is_array($data) || !isset($data['id'])) {
         if (blogger_last_error() === '') {
             blogger_set_last_error('Unable to fetch blog info from Blogger API.');
@@ -326,7 +508,8 @@ function blogger_fetch_post_by_id(array $site, string $postId): ?array
         'status' => 'LIVE',
     ]);
 
-    $data = blogger_read_json($url);
+    $cacheTtl = blogger_cache_ttl($site, 3600);
+    $data = blogger_read_json_cached($url, $cacheTtl);
     if (empty($data) || !is_array($data) || !isset($data['id'])) {
         if (blogger_last_error() === '') {
             blogger_set_last_error('Post not found from Blogger API for ID: ' . $postId);
@@ -372,6 +555,59 @@ function blogger_filter_posts_by_category(array $posts, string $categorySlug): a
     }
 
     return $result;
+}
+
+function blogger_select_related_posts(array $posts, string $currentPostId = '', string $categorySlug = '', int $limit = 3): array
+{
+    if ($limit <= 0) {
+        return [];
+    }
+
+    $selected = [];
+    $seenIds = [];
+    $currentPostId = trim($currentPostId);
+    $categorySlug = trim($categorySlug);
+
+    if ($categorySlug !== '') {
+        foreach ($posts as $post) {
+            if (count($selected) >= $limit) {
+                break;
+            }
+            $postId = (string) ($post['id'] ?? '');
+            if ($currentPostId !== '' && $postId === $currentPostId) {
+                continue;
+            }
+            if (($post['category_slug'] ?? '') !== $categorySlug) {
+                continue;
+            }
+            if ($postId !== '' && isset($seenIds[$postId])) {
+                continue;
+            }
+            $selected[] = $post;
+            if ($postId !== '') {
+                $seenIds[$postId] = true;
+            }
+        }
+    }
+
+    foreach ($posts as $post) {
+        if (count($selected) >= $limit) {
+            break;
+        }
+        $postId = (string) ($post['id'] ?? '');
+        if ($currentPostId !== '' && $postId === $currentPostId) {
+            continue;
+        }
+        if ($postId !== '' && isset($seenIds[$postId])) {
+            continue;
+        }
+        $selected[] = $post;
+        if ($postId !== '') {
+            $seenIds[$postId] = true;
+        }
+    }
+
+    return $selected;
 }
 
 function blogger_resolve_category_name(array $posts, string $categorySlug): string
