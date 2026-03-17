@@ -26,15 +26,9 @@ require __DIR__ . '/includes/header.php';
     <div class="space-y-5 sm:space-y-6 lg:col-span-2">
         <?php if ($author): ?>
             <section class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-                <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
-                    <img class="h-20 w-20 rounded-full object-cover" src="<?php echo htmlspecialchars($author['avatar'], ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($author['name'], ENT_QUOTES, 'UTF-8'); ?> avatar">
-                    <div>
-                        <h1 class="text-2xl font-bold"><?php echo htmlspecialchars($author['name'], ENT_QUOTES, 'UTF-8'); ?></h1>
-                        <p class="mt-1 text-sm text-slate-600">Author profile sourced from Blogger post metadata.</p>
-                        <?php if (!empty($author['external_url'])): ?>
-                            <a class="mt-2 inline-block text-sm underline" href="<?php echo htmlspecialchars($author['external_url'], ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener">View Blogger profile</a>
-                        <?php endif; ?>
-                    </div>
+                <div class="flex flex-col gap-2">
+                    <h1 class="text-2xl font-bold"><?php echo htmlspecialchars($author['name'], ENT_QUOTES, 'UTF-8'); ?></h1>
+                    <p class="text-sm text-slate-600">Author profile.</p>
                 </div>
                 <p class="mt-4 text-sm text-slate-600">Published articles: <?php echo (int) count($authorPosts); ?></p>
             </section>

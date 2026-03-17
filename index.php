@@ -40,6 +40,7 @@ ob_start();
 
 <!-- Standard Meta -->
 <meta name="robots" content="index, follow">
+<meta name="author" content="<?php echo htmlspecialchars($site['author_name'] ?? ($site['site_name'] ?? 'AI Law Guide'), ENT_QUOTES, 'UTF-8'); ?>">
 
 <!-- JSON-LD: WebSite + Sitelinks Searchbox -->
 <script type="application/ld+json">
@@ -170,4 +171,3 @@ $apiError = blogger_last_error();
 </section>
 
 <?php require __DIR__ . '/includes/footer.php'; ?>
-

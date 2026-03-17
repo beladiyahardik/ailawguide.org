@@ -104,7 +104,7 @@ if ($iconsVer !== '') {
         <meta name="twitter:card" content="summary_large_image">
         <meta name="twitter:title" content="<?php echo htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8'); ?>">
         <meta name="twitter:description" content="<?php echo htmlspecialchars($metaDescription, ENT_QUOTES, 'UTF-8'); ?>">
-        <meta name="author" content="<?php echo htmlspecialchars($site['site_name'] ?? 'AI Law Guide', ENT_QUOTES, 'UTF-8'); ?>">
+        <meta name="author" content="<?php echo htmlspecialchars($site['author_name'] ?? ($site['site_name'] ?? 'AI Law Guide'), ENT_QUOTES, 'UTF-8'); ?>">
     <?php endif; ?>
 
     <?php echo $extraHeadTags ?? ''; ?>

@@ -52,7 +52,8 @@ $metaUrl         = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'ht
     . '://' . ($_SERVER['HTTP_HOST'] ?? '')
     . ($_SERVER['REQUEST_URI'] ?? '');
 $metaAuthor      = $selectedPost && !empty($selectedPost['author']['name'])
-    ? $selectedPost['author']['name'] : ($site['site_name'] ?? 'AI Law Guide');
+    ? $selectedPost['author']['name']
+    : ($site['author_name'] ?? ($site['site_name'] ?? 'AI Law Guide'));
 $metaPublished   = $selectedPost ? ($selectedPost['date_iso'] ?? $selectedPost['date'] ?? '') : '';
 $metaCategory    = $selectedPost ? ($selectedPost['category'] ?? '') : '';
 $metaCategoryUrl = $selectedPost ? ($selectedPost['category_url'] ?? '') : '';
@@ -205,20 +206,14 @@ require __DIR__ . '/includes/header.php';
 
                     <!-- Author card -->
                     <?php if (!empty($selectedPost['author'])): ?>
-                        <div class="mt-6 flex items-center justify-between gap-4 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3"
+                        <div class="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3"
                             itemprop="author" itemscope itemtype="https://schema.org/Person">
-                            <div class="flex items-center gap-3">
-                                <img class="h-11 w-11 flex-shrink-0 rounded-full object-cover ring-2 ring-white shadow-sm"
-                                    src="<?php echo htmlspecialchars($selectedPost['author']['avatar'], ENT_QUOTES, 'UTF-8'); ?>"
-                                    alt="<?php echo htmlspecialchars($selectedPost['author']['name'], ENT_QUOTES, 'UTF-8'); ?>"
-                                    width="44" height="44" loading="lazy">
-                                <div class="leading-snug">
-                                    <p class="text-[11px] uppercase tracking-wide text-slate-500">Written by</p>
-                                    <p class="text-sm font-semibold text-slate-900 sm:text-base"
-                                        itemprop="name">
-                                        <?php echo htmlspecialchars($selectedPost['author']['name'], ENT_QUOTES, 'UTF-8'); ?>
-                                    </p>
-                                </div>
+                            <div class="leading-snug">
+                                <p class="text-[11px] uppercase tracking-wide text-slate-500">Written by</p>
+                                <p class="text-sm font-semibold text-slate-900 sm:text-base"
+                                    itemprop="name">
+                                    <?php echo htmlspecialchars($selectedPost['author']['name'], ENT_QUOTES, 'UTF-8'); ?>
+                                </p>
                             </div>
                             <a class="shrink-0 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 shadow-sm transition hover:bg-slate-100"
                                 href="<?php echo htmlspecialchars($selectedPost['author']['url'], ENT_QUOTES, 'UTF-8'); ?>"

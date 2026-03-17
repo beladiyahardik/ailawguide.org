@@ -193,22 +193,17 @@ function blogger_map_post(array $item, array $site): array
     $categorySlug = blogger_normalize_category_slug($category);
 
     $authorRaw = $item['author'] ?? [];
-    $authorName = (string) ($authorRaw['displayName'] ?? 'AI Law Guide Editorial');
     $authorId = (string) ($authorRaw['id'] ?? '');
-    $authorImage = (string) ($authorRaw['image']['url'] ?? '');
-    $authorProfile = (string) ($authorRaw['url'] ?? '');
+    $authorName = (string) ($site['author_name'] ?? 'Rahul Beladiya');
+    $authorProfile = (string) ($site['author_profile_url'] ?? '');
     $authorKeySource = $authorId !== '' ? $authorId : $authorName;
     $authorKey = blogger_normalize_author_key($authorKeySource);
-
-    if ($authorImage === '') {
-        $authorImage = $basePath . '/uploads/thumb-content.svg';
-    }
 
     $author = [
         'id' => $authorId,
         'key' => $authorKey,
         'name' => $authorName,
-        'avatar' => $authorImage,
+        'avatar' => '',
         'external_url' => $authorProfile,
         'url' => $basePath . '/author/' . rawurlencode($authorKey),
     ];

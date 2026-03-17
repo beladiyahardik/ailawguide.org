@@ -41,16 +41,14 @@ require __DIR__ . '/includes/header.php';
         </section>
 
         <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-7" aria-label="About the author">
-            <div class="flex flex-col gap-4 sm:flex-row sm:items-start">
-                <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-slate-100 text-lg font-semibold text-slate-600">
-                    AL
-                </div>
-                <div>
-                    <h2 class="text-lg font-semibold text-slate-900">About the Author</h2>
-                    <p class="mt-2 text-sm leading-7 text-slate-600">
-                        I am an AI developer dedicated to exploring the intersection of technology and global regulation. While not a legal professional, I track and analyze AI laws and governance across different countries to provide developer-centric insights into the evolving landscape of AI law news.
-                    </p>
-                </div>
+            <div>
+                <h2 class="text-lg font-semibold text-slate-900">About the Author</h2>
+                <p class="mt-1 text-sm font-semibold text-slate-900">
+                    <?php echo htmlspecialchars($site['author_name'] ?? 'Rahul Beladiya', ENT_QUOTES, 'UTF-8'); ?>
+                </p>
+                <p class="mt-2 text-sm leading-7 text-slate-600">
+                    I am an AI developer dedicated to exploring the intersection of technology and global regulation. While not a legal professional, I track and analyze AI laws and governance across different countries to provide developer-centric insights into the evolving landscape of AI law news.
+                </p>
             </div>
         </section>
     </article>

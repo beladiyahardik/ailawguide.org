@@ -4,15 +4,22 @@ if (!isset($posts) || !is_array($posts)) {
     $posts = blogger_fetch_posts($site, 9);
 }
 $basePath = rtrim((string) ($site['base_path'] ?? '/'), '/');
-$featuredAuthor = null;
+$defaultAuthorName = (string) ($site['author_name'] ?? 'Rahul Beladiya');
+$defaultAuthorKey = blogger_normalize_author_key($defaultAuthorName);
+$featuredAuthor = [
+    'name' => $defaultAuthorName,
+    'key' => $defaultAuthorKey,
+    'url' => $basePath . '/author/' . rawurlencode($defaultAuthorKey),
+];
 foreach ($posts as $post) {
     if (!empty($post['author']['name'])) {
         $featuredAuthor = $post['author'];
         break;
     }
 }
-$featuredAuthorKey = (string) ($featuredAuthor['key'] ?? 'author');
+$featuredAuthorKey = (string) ($featuredAuthor['key'] ?? $defaultAuthorKey);
 $featuredAuthorUrl = (string) ($featuredAuthor['url'] ?? ($basePath . '/author/' . rawurlencode($featuredAuthorKey)));
+$featuredAuthorName = (string) ($featuredAuthor['name'] ?? $defaultAuthorName);
 ?>
 <aside class="space-y-5 sm:space-y-6">
     <section class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
@@ -31,18 +38,9 @@ $featuredAuthorUrl = (string) ($featuredAuthor['url'] ?? ($basePath . '/author/'
     <section class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
         <h2 class="text-sm font-semibold uppercase tracking-wide text-slate-700">About the Author</h2>
         <div class="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
-            <div class="flex items-start gap-3">
-                <?php if (!empty($featuredAuthor['avatar'])): ?>
-                    <img class="h-14 w-14 flex-shrink-0 rounded-full object-cover ring-2 ring-white shadow-sm" src="<?php echo htmlspecialchars($featuredAuthor['avatar'], ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($featuredAuthor['name'] ?? 'Author', ENT_QUOTES, 'UTF-8'); ?> avatar" loading="lazy">
-                <?php else: ?>
-                    <span class="inline-flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-slate-200 text-lg font-semibold text-slate-600">
-                        <?php echo htmlspecialchars(strtoupper(substr((string) ($featuredAuthor['name'] ?? 'A'), 0, 1)), ENT_QUOTES, 'UTF-8'); ?>
-                    </span>
-                <?php endif; ?>
-                <div class="min-w-0">
-                    <p class="text-base font-semibold leading-tight text-slate-900"><?php echo htmlspecialchars($featuredAuthor['name'] ?? 'Editorial Team', ENT_QUOTES, 'UTF-8'); ?></p>
-                    <p class="mt-1 text-xs text-slate-500">AI developer and regulatory researcher</p>
-                </div>
+            <div class="min-w-0">
+                <p class="text-base font-semibold leading-tight text-slate-900"><?php echo htmlspecialchars($featuredAuthorName, ENT_QUOTES, 'UTF-8'); ?></p>
+                <p class="mt-1 text-xs text-slate-500">AI developer and regulatory researcher</p>
             </div>
             <p class="mt-3 text-sm leading-6 text-slate-600">
                 I am an AI developer dedicated to exploring the intersection of technology and global regulation. While not a legal professional, I track and analyze AI laws and governance across different countries to provide developer-centric insights into the evolving landscape of AI law news.
