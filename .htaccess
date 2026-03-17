@@ -1,0 +1,38 @@
+RewriteEngine On
+Options -MultiViews
+
+# Favicon fallback for agents requesting /favicon.ico
+RewriteRule ^favicon\.ico$ favicon.png [L,NC]
+
+# Redirect explicit .php URLs to clean extensionless URLs (directory-safe)
+RewriteCond %{REQUEST_URI} ^/(.*?/)?index/?$ [NC]
+RewriteRule ^index/?$ /%1 [R=301,L]
+RewriteCond %{THE_REQUEST} \s/+((?:.*/)?)(about|contact|privacy-policy|cookie-policy|terms|disclaimer|gdpr|us-privacy-rights|sitemap|category)\.php(?:[\s?]|$) [NC]
+RewriteRule ^(about|contact|privacy-policy|cookie-policy|terms|disclaimer|gdpr|us-privacy-rights|sitemap|category)\.php$ /%1$1 [R=301,L]
+RewriteCond %{THE_REQUEST} \s/+((?:.*/)?)(?:index)\.php(?:[\s?]|$) [NC]
+RewriteRule ^index\.php$ /%1 [R=301,L]
+
+# Blog detail route: pass raw path segment and let PHP parse slug + post id
+RewriteRule ^blog/(.+)/?$ blog.php?path=$1 [QSA,L,NC]
+
+# Author profile route
+RewriteRule ^author/([^/]+)/?$ author.php?author=$1 [QSA,L,NC]
+
+# Category route
+RewriteRule ^category/([^/]+)/?$ category.php?category=$1 [QSA,L,NC]
+
+# Dynamic XML sitemap
+RewriteRule ^sitemap\.xml$ sitemap-xml.php [L,NC]
+
+# Extensionless static pages
+RewriteRule ^$ index.php [L]
+RewriteRule ^about/?$ about.php [L,NC]
+RewriteRule ^contact/?$ contact.php [L,NC]
+RewriteRule ^privacy-policy/?$ privacy-policy.php [L,NC]
+RewriteRule ^cookie-policy/?$ cookie-policy.php [L,NC]
+RewriteRule ^terms/?$ terms.php [L,NC]
+RewriteRule ^disclaimer/?$ disclaimer.php [L,NC]
+RewriteRule ^gdpr/?$ gdpr.php [L,NC]
+RewriteRule ^us-privacy-rights/?$ us-privacy-rights.php [L,NC]
+RewriteRule ^sitemap/?$ sitemap.php [L,NC]
+RewriteRule ^category/?$ category.php [L,NC]

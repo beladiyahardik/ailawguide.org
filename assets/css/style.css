@@ -1,0 +1,63 @@
+:root {
+  --ink-950: #0b1120;
+  --ink-900: #0f172a;
+  --ink-700: #334155;
+  --paper-50: #f8fafc;
+  --paper-100: #f1f5f9;
+  --accent-600: #0f766e;
+  --accent-700: #0f5f59;
+}
+
+body {
+  font-family: "Source Sans 3", "IBM Plex Sans", "Noto Sans", "Segoe UI", "Helvetica Neue", sans-serif;
+  color: var(--ink-900);
+  background-color: var(--paper-50);
+  background-image:
+    radial-gradient(1200px 600px at 12% -12%, rgba(20, 184, 166, 0.12), transparent 60%),
+    radial-gradient(900px 500px at 90% 0%, rgba(148, 163, 184, 0.18), transparent 62%);
+  background-attachment: fixed;
+}
+
+a {
+  color: inherit;
+}
+
+a:hover {
+  color: var(--accent-700);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent-600);
+  outline-offset: 2px;
+}
+
+.skip-link {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 50;
+  transform: translateY(-200%);
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  background: #0f172a;
+  color: #ffffff;
+  font-size: 0.875rem;
+  text-decoration: none;
+}
+
+.skip-link:focus,
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+.ad-slot {
+  border: 1px dashed #94a3b8;
+  background: #f8fafc;
+  color: #64748b;
+  text-align: center;
+}
+
+.ads-hidden .ad-wrap,
+.ads-hidden .ad-slot {
+  display: none;
+}
