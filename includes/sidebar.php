@@ -28,6 +28,7 @@ $featuredAuthorUrl  = (string) ($featuredAuthor['url'] ?? ($basePath . '/author/
 $featuredAuthorName = (string) ($featuredAuthor['name'] ?? $defaultAuthorName);
 $authorTitle        = (string) ($site['author_title'] ?? 'AI Developer & Regulatory Researcher');
 $authorBio          = (string) ($site['author_bio']   ?? '');
+$authorSidebarIntro = (string) ($site['author_sidebar_intro'] ?? '');
 $sidebarSuggestions = blogger_select_related_posts($posts, $currentPostId, $currentCategorySlug, 4);
 ?>
 <aside class="space-y-5 sm:space-y-6">
@@ -62,7 +63,9 @@ $sidebarSuggestions = blogger_select_related_posts($posts, $currentPostId, $curr
                 </div>
             </div>
             <p class="mt-3 text-xs leading-5 text-slate-600">
-                <?php if ($authorBio !== ''): ?>
+                <?php if ($authorSidebarIntro !== ''): ?>
+                    <?php echo htmlspecialchars($authorSidebarIntro, ENT_QUOTES, 'UTF-8'); ?>
+                <?php elseif ($authorBio !== ''): ?>
                     <?php echo htmlspecialchars(mb_substr($authorBio, 0, 160) . (mb_strlen($authorBio) > 160 ? '...' : ''), ENT_QUOTES, 'UTF-8'); ?>
                 <?php else: ?>
                     AI developer tracking global AI regulation and compliance requirements to help engineering teams build responsible products.

@@ -16,14 +16,14 @@ $author      = blogger_find_author($posts, $authorKey);
 $authorPosts = blogger_filter_posts_by_author($posts, $authorKey);
 
 $resolvedName  = $author['name'] ?? $site['author_name'] ?? 'Rahul Beladiya';
-$resolvedTitle = $site['author_title'] ?? 'AI Developer & Regulatory Researcher';
+$resolvedTitle = $site['author_title'] ?? 'Drafting on the Legal Technology Landscape';
 $resolvedBio   = $site['author_bio'] ?? '';
 $basePath      = rtrim((string) ($site['base_path'] ?? '/'), '/');
 $metaUrl       = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http')
     . '://' . ($_SERVER['HTTP_HOST'] ?? '') . '/author/' . rawurlencode($authorKey);
 
 $pageTitle       = $resolvedName . ' | Author | AI Law Guide';
-$metaDescription = 'Learn about ' . $resolvedName . ', AI developer and regulatory researcher behind AI Law Guide. Read ' . count($authorPosts) . ' published articles on AI law and compliance.';
+$metaDescription = 'Learn about ' . $resolvedName . ', a legal tech strategist and writer covering AI, legal technology, and digital transformation. Read ' . count($authorPosts) . ' published articles on AI law and legal operations.';
 
 ob_start();
 ?>
@@ -52,12 +52,12 @@ ob_start();
       "https://github.com/rcbeladiya"
     ],
     "knowsAbout": [
-      "EU AI Act",
-      "AI Regulation",
-      "Model Risk Management",
-      "Privacy Law",
-      "AI Governance",
-      "Machine Learning Systems"
+      "Legal Technology",
+      "Artificial Intelligence",
+      "Contract Lifecycle Management",
+      "Legal Operations",
+      "Compliance Technology",
+      "Digital Transformation"
     ],
     "worksFor": {
       "@type": "Organization",
@@ -104,14 +104,14 @@ require __DIR__ . '/includes/header.php';
                         </p>
                     <?php else: ?>
                         <p class="mt-3 text-sm leading-7 text-slate-700">
-                            Rahul Beladiya is an AI developer who tracks global AI regulation to help engineering and product teams build compliant systems. He writes from direct experience building AI products, not from a legal theory perspective. He founded AI Law Guide to close the gap between regulatory text and operational implementation.
+                            I am a Legal Tech strategist and writer focused on the intersection of law, AI, and digital transformation. My work helps legal teams and technology companies make practical decisions about legal tech, compliance workflows, and technology-enabled operations.
                         </p>
                     <?php endif; ?>
 
                     <!-- Expertise tags -->
                     <div class="mt-4 flex flex-wrap gap-2">
                         <?php
-                        $expertise = ['EU AI Act', 'US AI Laws', 'Model Risk Management', 'Privacy & GDPR', 'AI Governance', 'Compliance Ops'];
+                        $expertise = ['Legal Technology', 'AI in Legal Workflows', 'Contract Lifecycle Management', 'Legal Operations', 'Compliance Strategy', 'Digital Empowerment'];
                         foreach ($expertise as $tag):
                         ?>
                             <span class="rounded-full border border-brand-200 bg-white px-3 py-1 text-xs font-medium text-brand-700">
@@ -146,22 +146,22 @@ require __DIR__ . '/includes/header.php';
         <div class="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-5 py-4">
             <i class="bi bi-info-circle mt-0.5 shrink-0 text-lg text-amber-600" aria-hidden="true"></i>
             <p class="text-sm leading-6 text-amber-800">
-                <strong>Not a lawyer.</strong> Rahul is an AI developer and researcher, not a licensed legal professional. All content on this site is educational. Consult qualified legal counsel for jurisdiction-specific decisions.
+                <strong>Educational content only.</strong> This page shares strategic and informational insights on AI, legal technology, and digital transformation. For legal advice or jurisdiction-specific decisions, consult qualified legal counsel.
             </p>
         </div>
 
         <!-- What I focus on -->
         <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 class="text-lg font-semibold text-slate-900">Research Focus Areas</h2>
+            <h2 class="text-lg font-semibold text-slate-900">Focus Areas</h2>
             <div class="mt-4 grid gap-3 sm:grid-cols-2">
                 <?php
                 $focusAreas = [
-                    ['bi-shield-check', 'EU AI Act', 'Risk classification, documentation requirements, conformity assessment, and operator obligations under the EU AI Act.'],
-                    ['bi-map', 'US State AI Laws', 'Colorado, California, Texas, and other state-level AI governance and privacy requirements affecting product teams.'],
-                    ['bi-graph-up', 'Model Risk Management', 'How to document model development, define release criteria, and maintain audit trails for regulatory review.'],
-                    ['bi-lock', 'Privacy & Data Rights', 'GDPR, CCPA, and sector-specific rules that intersect with AI data handling and personal data processing.'],
-                    ['bi-people', 'Vendor AI Governance', 'Obligations and risk considerations when using third-party AI services or foundation models in your product.'],
-                    ['bi-file-earmark-text', 'Internal Policy Design', 'Acceptable use policies, human oversight requirements, and incident response frameworks for AI features.'],
+                    ['bi-cpu', 'AI-Powered Contract Lifecycle Management', 'Practical guidance on evaluating and implementing AI-driven CLM systems that improve drafting, review, and approval workflows.'],
+                    ['bi-briefcase', 'Future-Ready Legal Operations', 'Strategies for building legal operations that are scalable, technology-enabled, and aligned with business growth.'],
+                    ['bi-shield-check', 'Compliance and Efficiency', 'Support in choosing tools and workflows that strengthen compliance while improving the efficiency of legal and business teams.'],
+                    ['bi-diagram-3', 'Legal Tech Ecosystem Navigation', 'Clear analysis of vendors, platforms, and categories across the legal tech landscape to support smarter technology decisions.'],
+                    ['bi-gear', 'Digital Transformation for Legal Teams', 'Actionable approaches for modernizing legal work through automation, process design, and better digital support.'],
+                    ['bi-lightbulb', 'Practical Technology Strategy', 'Complex innovations translated into grounded, useful strategies that legal professionals and tech leaders can apply with confidence.'],
                 ];
                 foreach ($focusAreas as [$icon, $title, $desc]):
                 ?>
