@@ -28,15 +28,6 @@ if ($selectedPost !== null) {
     $renderedContent = (string) ($selectedPost['content'] ?? '');
     $renderedContent = preg_replace('/<table\b/i', '<div class="table-wrap"><table', $renderedContent);
     $renderedContent = str_ireplace('</table>', '</table></div>', $renderedContent);
-    $inArticleAd = '<div class="my-6 ad-wrap"><div class="ad-slot flex h-28 items-center justify-center rounded-xl text-[11px] font-semibold uppercase tracking-[0.28em] text-slate-500">In-Article Ad Placeholder</div></div>';
-    $paragraphCount = 0;
-    $renderedContent = preg_replace_callback('/<\/p>/i', function ($matches) use (&$paragraphCount, $inArticleAd) {
-        $paragraphCount++;
-        if ($paragraphCount === 2) {
-            return $matches[0] . $inArticleAd;
-        }
-        return $matches[0];
-    }, $renderedContent);
     $renderedContent = blogger_strip_image_links($renderedContent);
     $renderedContent = blogger_localize_html_images($renderedContent, $site);
 }
@@ -169,12 +160,6 @@ require __DIR__ . '/includes/header.php';
                 </span>
             </nav>
 
-            <div class="ad-wrap lg:hidden">
-                <div class="ad-slot flex h-40 items-center justify-center rounded-xl text-[11px] font-semibold uppercase tracking-[0.28em] text-slate-500">
-                    Display Ad Placeholder
-                </div>
-            </div>
-
             <!-- Article card -->
             <article class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
                 itemscope itemtype="https://schema.org/Article">
@@ -195,13 +180,30 @@ require __DIR__ . '/includes/header.php';
                         <?php echo htmlspecialchars($selectedPost['title'], ENT_QUOTES, 'UTF-8'); ?>
                     </h1>
 
-                    <!-- Meta row: date + read time -->
+                    <!-- Meta row: date + updated + read time -->
+                    <?php
+                    $metaModified    = (string) ($selectedPost['date_modified_iso'] ?? '');
+                    $modifiedTs      = $metaModified !== '' ? strtotime($metaModified) : false;
+                    $publishedTs     = $metaPublished !== '' ? strtotime($metaPublished) : false;
+                    $showUpdated     = $modifiedTs !== false && $publishedTs !== false && ($modifiedTs - $publishedTs) > 86400;
+                    $modifiedFormatted = $modifiedTs !== false ? date('F j, Y', $modifiedTs) : '';
+                    ?>
                     <div class="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500 sm:text-sm">
                         <time itemprop="datePublished" class="inline-flex items-center gap-1"
                             datetime="<?php echo htmlspecialchars($metaPublished, ENT_QUOTES, 'UTF-8'); ?>">
                             <i class="bi bi-calendar3" aria-hidden="true"></i>
                             <?php echo htmlspecialchars($selectedPost['date'], ENT_QUOTES, 'UTF-8'); ?>
                         </time>
+                        <?php if ($showUpdated): ?>
+                            <span aria-hidden="true" class="text-slate-300">|</span>
+                            <time itemprop="dateModified" class="inline-flex items-center gap-1 text-brand-600"
+                                datetime="<?php echo htmlspecialchars($metaModified, ENT_QUOTES, 'UTF-8'); ?>">
+                                <i class="bi bi-arrow-clockwise" aria-hidden="true"></i>
+                                Updated <?php echo htmlspecialchars($modifiedFormatted, ENT_QUOTES, 'UTF-8'); ?>
+                            </time>
+                        <?php else: ?>
+                            <meta itemprop="dateModified" content="<?php echo htmlspecialchars($metaModified !== '' ? $metaModified : $metaPublished, ENT_QUOTES, 'UTF-8'); ?>">
+                        <?php endif; ?>
                         <span aria-hidden="true" class="text-slate-300">|</span>
                         <span class="inline-flex items-center gap-1"><i class="bi bi-clock" aria-hidden="true"></i><?php echo htmlspecialchars($selectedPost['read_time'], ENT_QUOTES, 'UTF-8'); ?></span>
                     </div>

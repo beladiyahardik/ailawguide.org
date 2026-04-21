@@ -352,7 +352,7 @@ if ($iconsVer !== '') {
     </style>
 </head>
 
-<body class="min-h-screen font-sans text-slate-900 antialiased ads-hidden">
+<body class="min-h-screen font-sans text-slate-900 antialiased">
     <a class="skip-link" href="#main-content">Skip to content</a>
 
     <!-- Site header -->
@@ -435,14 +435,6 @@ if ($iconsVer !== '') {
             <?php endforeach; ?>
         </div>
     </header>
-
-    <!-- <div class="ad-wrap sticky top-14 z-30 border-b border-slate-200 bg-slate-50/95 backdrop-blur supports-[backdrop-filter]:bg-white/80 sm:top-16">
-        <div class="mx-auto max-w-6xl px-4 py-2">
-            <div class="ad-slot flex h-14 items-center justify-center rounded-lg text-[11px] font-semibold tracking-[0.28em] text-slate-500">
-                Leaderboard Ad Placeholder
-            </div>
-        </div>
-    </div> -->
 
     <!-- Hamburger toggle script -->
     <script>
