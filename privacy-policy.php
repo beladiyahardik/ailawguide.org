@@ -1,4 +1,5 @@
 <?php
+require __DIR__ . '/includes/page-cache.php';
 $pageTitle = 'Privacy Policy | AI Law Guide';
 $metaDescription = 'Comprehensive privacy policy for AI Law Guide, including data collection, legal basis, rights, retention, and regional disclosures.';
 require __DIR__ . '/includes/header.php';

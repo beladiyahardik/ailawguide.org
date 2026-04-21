@@ -1,4 +1,5 @@
 <?php
+require __DIR__ . '/includes/page-cache.php';
 $pageTitle = 'US Privacy Rights | AI Law Guide';
 $metaDescription = 'US state privacy rights page covering access, deletion, correction, and opt-out request handling.';
 require __DIR__ . '/includes/header.php';

@@ -1,4 +1,5 @@
 <?php
+require __DIR__ . '/includes/page-cache.php';
 $site = require __DIR__ . '/includes/site.php';
 $pageTitle       = 'About AI Law Guide | Who We Are & How We Research';
 $metaDescription = 'AI Law Guide is an independent publication led by Rahul Beladiya, a legal tech strategist and writer covering AI, legal technology, and digital transformation.';

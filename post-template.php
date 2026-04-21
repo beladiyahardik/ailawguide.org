@@ -1,4 +1,5 @@
 <?php
+require __DIR__ . '/includes/page-cache.php';
 $pageTitle = 'Post Template | AI Law Guide';
 $metaDescription = 'Sample post template showcasing editorial layout and author attribution.';
 $metaRobots = 'noindex, nofollow';

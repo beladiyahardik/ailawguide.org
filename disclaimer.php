@@ -1,4 +1,5 @@
 <?php
+require __DIR__ . '/includes/page-cache.php';
 $pageTitle = 'Disclaimer | AI Law Guide';
 $metaDescription = 'Editorial, legal, advertising, and affiliate disclaimer for AI Law Guide content.';
 require __DIR__ . '/includes/header.php';

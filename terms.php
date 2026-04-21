@@ -1,4 +1,5 @@
 <?php
+require __DIR__ . '/includes/page-cache.php';
 $pageTitle = 'Terms of Use | AI Law Guide';
 $metaDescription = 'Terms of Use for AI Law Guide covering acceptable use, intellectual property, limitations, and legal conditions.';
 require __DIR__ . '/includes/header.php';

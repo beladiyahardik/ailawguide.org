@@ -1,4 +1,5 @@
 <?php
+require __DIR__ . '/includes/page-cache.php';
 header('Content-Type: text/html; charset=UTF-8');
 $site = require __DIR__ . '/includes/site.php';
 require __DIR__ . '/includes/blogger.php';

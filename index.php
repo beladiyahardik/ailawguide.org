@@ -1,4 +1,5 @@
 <?php
+require __DIR__ . '/includes/page-cache.php';
 require_once __DIR__ . '/includes/blogger.php';
 
 $site = require __DIR__ . '/includes/site.php';

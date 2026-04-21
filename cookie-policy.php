@@ -1,4 +1,5 @@
 <?php
+require __DIR__ . '/includes/page-cache.php';
 $pageTitle = 'Cookie Policy | AI Law Guide';
 $metaDescription = 'Detailed cookie policy for AI Law Guide, including cookie categories, consent controls, data retention, and regional rights.';
 require __DIR__ . '/includes/header.php';

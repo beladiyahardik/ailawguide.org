@@ -1,4 +1,5 @@
 <?php
+require __DIR__ . '/includes/page-cache.php';
 $site = require __DIR__ . '/includes/site.php';
 
 $pageTitle       = 'Contact | AI Law Guide';

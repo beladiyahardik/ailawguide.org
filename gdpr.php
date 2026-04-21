@@ -1,4 +1,5 @@
 <?php
+require __DIR__ . '/includes/page-cache.php';
 $pageTitle = 'EU Privacy Rights (GDPR) | AI Law Guide';
 $metaDescription = 'GDPR rights information for EU and EEA visitors, including lawful basis, data subject rights, and request handling process.';
 require __DIR__ . '/includes/header.php';
