@@ -3,24 +3,39 @@ $site = require __DIR__ . '/includes/site.php';
 require __DIR__ . '/includes/blogger.php';
 
 $authorKey = (string) ($_GET['author'] ?? '');
+$defaultAuthorKey = blogger_normalize_author_key((string) ($site['author_slug'] ?? ($site['author_name'] ?? 'Rahul Beladiya')));
+$requestPath = (string) parse_url((string) ($_SERVER['REQUEST_URI'] ?? ''), PHP_URL_PATH);
 if ($authorKey === '') {
-    $uriPath = parse_url((string) ($_SERVER['REQUEST_URI'] ?? ''), PHP_URL_PATH);
-    if (is_string($uriPath) && preg_match('#/author/([^/]+)/?$#', $uriPath, $matches)) {
+    if ($requestPath !== '' && preg_match('#/author/([^/]+)/?$#', $requestPath, $matches)) {
         $authorKey = (string) $matches[1];
     }
 }
 
 $authorKey   = blogger_normalize_author_key($authorKey);
+if ($authorKey === '' || $authorKey !== $defaultAuthorKey) {
+    $authorKey = $defaultAuthorKey;
+}
 $posts       = blogger_fetch_posts($site, 100);
 $author      = blogger_find_author($posts, $authorKey);
 $authorPosts = blogger_filter_posts_by_author($posts, $authorKey);
 
 $resolvedName  = $author['name'] ?? $site['author_name'] ?? 'Rahul Beladiya';
-$resolvedTitle = $site['author_title'] ?? 'Drafting on the Legal Technology Landscape';
+$resolvedTitle = $site['author_title'] ?? 'Provides guidance on AI adoption within legal frameworks.';
 $resolvedBio   = $site['author_bio'] ?? '';
 $basePath      = rtrim((string) ($site['base_path'] ?? '/'), '/');
+$authorPath    = (string) ($site['author_profile_path'] ?? (($basePath === '' ? '' : $basePath) . '/author/' . rawurlencode($authorKey)));
 $metaUrl       = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http')
-    . '://' . ($_SERVER['HTTP_HOST'] ?? '') . '/author/' . rawurlencode($authorKey);
+    . '://' . ($_SERVER['HTTP_HOST'] ?? '') . $authorPath;
+
+$isCanonicalAuthorPath = $requestPath !== '' && preg_match('#^' . preg_quote($authorPath, '#') . '/?$#', $requestPath);
+$needsAuthorRedirect = $requestPath === ''
+    || preg_match('#/author/?$#', $requestPath)
+    || !$isCanonicalAuthorPath;
+
+if ($needsAuthorRedirect) {
+    header('Location: ' . $authorPath, true, 301);
+    exit;
+}
 
 $pageTitle       = $resolvedName . ' | Author | AI Law Guide';
 $metaDescription = 'Learn about ' . $resolvedName . ', a legal tech strategist and writer covering AI, legal technology, and digital transformation. Read ' . count($authorPosts) . ' published articles on AI law and legal operations.';

@@ -32,11 +32,13 @@ function blogger_cache_dir(string $name): string
 
 function blogger_read_json_cached(string $url, int $ttlSeconds = 0): array
 {
-    $cacheFile = '';
-    if ($ttlSeconds > 0) {
-        $cacheDir = blogger_cache_dir('blogger');
-        $cacheFile = $cacheDir . '/' . sha1($url) . '.json';
-        if (is_file($cacheFile) && (time() - filemtime($cacheFile) < $ttlSeconds)) {
+    $cacheDir = blogger_cache_dir('blogger');
+    $cacheFile = $cacheDir . '/' . sha1($url) . '.json';
+    $cacheForever = $ttlSeconds < 0;
+
+    if (is_file($cacheFile)) {
+        $isFresh = $cacheForever || ($ttlSeconds > 0 && (time() - filemtime($cacheFile) < $ttlSeconds));
+        if ($isFresh) {
             $cached = @file_get_contents($cacheFile);
             if (is_string($cached) && $cached !== '') {
                 blogger_set_last_error('');
@@ -49,16 +51,12 @@ function blogger_read_json_cached(string $url, int $ttlSeconds = 0): array
     }
 
     $data = blogger_read_json($url);
-    if ($ttlSeconds > 0 && !empty($data)) {
-        if ($cacheFile === '') {
-            $cacheDir = blogger_cache_dir('blogger');
-            $cacheFile = $cacheDir . '/' . sha1($url) . '.json';
-        }
+    if (!empty($data)) {
         @file_put_contents($cacheFile, json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), LOCK_EX);
         return $data;
     }
 
-    if ($ttlSeconds > 0 && $cacheFile !== '' && is_file($cacheFile)) {
+    if (is_file($cacheFile)) {
         $cached = @file_get_contents($cacheFile);
         if (is_string($cached) && $cached !== '') {
             $decoded = json_decode($cached, true);
@@ -74,6 +72,10 @@ function blogger_read_json_cached(string $url, int $ttlSeconds = 0): array
 
 function blogger_cache_ttl(array $site, int $fallback): int
 {
+    if (!empty($site['blogger_cache_forever'])) {
+        return -1;
+    }
+
     $ttl = (int) ($site['blogger_cache_ttl'] ?? 0);
     return $ttl > 0 ? $ttl : $fallback;
 }
@@ -376,8 +378,15 @@ function blogger_map_post(array $item, array $site): array
     $authorId = (string) ($authorRaw['id'] ?? '');
     $authorName = (string) ($site['author_name'] ?? 'Rahul Beladiya');
     $authorProfile = (string) ($site['author_profile_url'] ?? '');
-    $authorKeySource = $authorId !== '' ? $authorId : $authorName;
+    $authorProfilePath = (string) ($site['author_profile_path'] ?? '');
+    $authorKeySource = (string) ($site['author_slug'] ?? '');
+    if ($authorKeySource === '') {
+        $authorKeySource = $authorId !== '' ? $authorId : $authorName;
+    }
     $authorKey = blogger_normalize_author_key($authorKeySource);
+    if ($authorProfilePath === '') {
+        $authorProfilePath = $basePath . '/author/' . rawurlencode($authorKey);
+    }
 
     $author = [
         'id' => $authorId,
@@ -385,7 +394,7 @@ function blogger_map_post(array $item, array $site): array
         'name' => $authorName,
         'avatar' => '',
         'external_url' => $authorProfile,
-        'url' => $basePath . '/author/' . rawurlencode($authorKey),
+        'url' => $authorProfilePath,
     ];
 
     return [

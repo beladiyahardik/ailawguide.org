@@ -11,11 +11,12 @@ if (isset($selectedPost) && is_array($selectedPost)) {
 }
 $basePath          = rtrim((string) ($site['base_path'] ?? '/'), '/');
 $defaultAuthorName = (string) ($site['author_name']  ?? 'Rahul Beladiya');
-$defaultAuthorKey  = blogger_normalize_author_key($defaultAuthorName);
+$defaultAuthorKey  = blogger_normalize_author_key((string) ($site['author_slug'] ?? $defaultAuthorName));
+$defaultAuthorUrl  = (string) ($site['author_profile_path'] ?? ($basePath . '/author/' . rawurlencode($defaultAuthorKey)));
 $featuredAuthor    = [
     'name' => $defaultAuthorName,
     'key'  => $defaultAuthorKey,
-    'url'  => $basePath . '/author/' . rawurlencode($defaultAuthorKey),
+    'url'  => $defaultAuthorUrl,
 ];
 foreach ($posts as $post) {
     if (!empty($post['author']['name'])) {
@@ -24,7 +25,7 @@ foreach ($posts as $post) {
     }
 }
 $featuredAuthorKey  = (string) ($featuredAuthor['key'] ?? $defaultAuthorKey);
-$featuredAuthorUrl  = (string) ($featuredAuthor['url'] ?? ($basePath . '/author/' . rawurlencode($featuredAuthorKey)));
+$featuredAuthorUrl  = (string) ($featuredAuthor['url'] ?? $defaultAuthorUrl);
 $featuredAuthorName = (string) ($featuredAuthor['name'] ?? $defaultAuthorName);
 $authorTitle        = (string) ($site['author_title'] ?? 'AI Developer & Regulatory Researcher');
 $authorBio          = (string) ($site['author_bio']   ?? '');

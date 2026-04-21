@@ -1,4 +1,5 @@
 <?php
+$site = require __DIR__ . '/site.php';
 $cacheTtl = 60 * 60 * 24;
 $cacheBuffering = false;
 $requestUri = (string) ($_SERVER['REQUEST_URI'] ?? '/');
@@ -7,9 +8,10 @@ $cacheDir = __DIR__ . '/../cache';
 $cacheFile = $cacheDir . '/' . $cacheKey . '.html';
 $cacheEnabled = (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'GET')
     && (strpos($requestUri, 'nocache=1') === false);
+$cacheForever = !empty($site['page_cache_forever']);
 
 if ($cacheEnabled) {
-    if (is_file($cacheFile) && (time() - filemtime($cacheFile) < $cacheTtl)) {
+    if (is_file($cacheFile) && ($cacheForever || (time() - filemtime($cacheFile) < $cacheTtl))) {
         header('X-Cache: HIT');
         readfile($cacheFile);
         exit;
@@ -20,8 +22,6 @@ if ($cacheEnabled) {
         ob_start();
     }
 }
-
-$site = require __DIR__ . '/site.php';
 if (!isset($pageTitle) || $pageTitle === '') {
     $pageTitle = $site['site_name'];
 }
